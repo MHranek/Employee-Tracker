@@ -1,7 +1,6 @@
 // Requires
 const mysql2 = require('mysql2');
 const inquirer = require('inquirer');
-const { first } = require('lodash');
 
 // initial command line query
 // view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
@@ -87,25 +86,27 @@ const start = function() {
         // Depending on user's choice either return corresponding data or prompt corresponding questions
         switch (data.option) {
             case 'View all departments':
-                
+                // TODO log all departments
                 break;
             case 'View all roles':
-            
+                // TODO log all roles
                 break;
             case 'View all employees':
-            
+                // TODO log all employees
                 break;
             case 'Add a department':
-            
+                // TODO prompt user for a department name
                 break;
             case 'Add a role':
-                
+                // TODO prompt user for a role
+                // TODO prevent adding roles unless at least one department exists
                 break;
             case 'Add an employee':
-            
+                // TODO prompt user for an employee
+                // TODO prevent adding employees unless at least one role exists
                 break;
             case 'Update an employee role':
-        
+                // TODO prompt user for an employee to update their role
                 break;
             default:
                 break;
