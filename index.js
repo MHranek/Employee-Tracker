@@ -22,6 +22,70 @@ const firstQueryQuestions = [
     }
 ]
 
-inquirer.prompt(firstQueryQuestions).then(data => {
-    console.log(data);
-}).catch(err => console.error(err))
+const addDepartmentsQuestions = [
+    {
+        name: 'name',
+        type: 'input',
+        message: "What is department's name?"
+    }
+]
+
+const addRoleQuestions = [
+    {
+        name: 'name',
+        type: 'input',
+        message: "What is the role's name?"
+    },
+    {
+        name: 'salary',
+        type: 'number',
+        message: "What is the role's salary?"
+    },
+    {
+        name: 'department',
+        type: 'list',
+        message: "What is the role's department?",
+        choices: ['Default'] // TODO get current departments and add these to the choices
+    }
+]
+
+const addEmployeeQuestions = [
+    {
+        name: 'firstName',
+        type: 'input',
+        message: "What is the employee's first name?"
+    },
+    {
+        name: 'lastName',
+        type: 'input',
+        message: "What is the employee's last name?"
+    },
+    {
+        name: 'role',
+        type: 'list',
+        message: "What is the employee's role?",
+        choices: ['Default'] // TODO get current roles and add these to the choices
+    },
+    {
+        name: 'manager',
+        type: 'input',
+        message: "Who is the employee's manager?"
+    }
+]
+
+const updateEmployeeQuestions = [
+    {
+        name: 'employee',
+        type: 'list',
+        message: "Which employee do you want to update?",
+        choices: ['Default'] // TODO get current employees and add these to the choices
+    }
+]
+
+const start = function() {
+    inquirer.prompt(firstQueryQuestions).then(data => {
+        console.log(data);
+    }).catch(err => console.error(err))
+}
+
+start();
