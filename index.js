@@ -84,7 +84,32 @@ const updateEmployeeQuestions = [
 
 const start = function() {
     inquirer.prompt(firstQueryQuestions).then(data => {
-        console.log(data);
+        // Depending on user's choice either return corresponding data or prompt corresponding questions
+        switch (data.option) {
+            case 'View all departments':
+                
+                break;
+            case 'View all roles':
+            
+                break;
+            case 'View all employees':
+            
+                break;
+            case 'Add a department':
+            
+                break;
+            case 'Add a role':
+                
+                break;
+            case 'Add an employee':
+            
+                break;
+            case 'Update an employee role':
+        
+                break;
+            default:
+                break;
+        }
     }).catch(err => console.error(err))
 }
 
