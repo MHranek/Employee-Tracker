@@ -106,10 +106,20 @@ const startQuestions = function() {
                 });
                 break;
             case 'View all roles':
-                // TODO log all roles
+                // log all roles
+                db.query('SELECT * FROM roles', function (err, results) {
+                    console.log('');
+                    console.table(results);
+                    startQuestions();
+                });
                 break;
             case 'View all employees':
-                // TODO log all employees
+                // log all employees
+                db.query('SELECT * FROM employees', function (err, results) {
+                    console.log('');
+                    console.table(results);
+                    startQuestions();
+                });
                 break;
             case 'Add a department':
                 // TODO prompt user for a department name
