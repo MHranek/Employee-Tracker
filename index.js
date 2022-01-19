@@ -1,6 +1,7 @@
 // Requires
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
+const res = require('express/lib/response');
 
 // Mysql connection
 const db = mysql.createConnection(
@@ -12,6 +13,22 @@ const db = mysql.createConnection(
     },
     console.log('Employee Manager')
 );
+
+// Get current departments, returns array of strings
+const getDepartments = function () {
+    const departmentList = [];
+    db.query('SELECT departments.id, departments.department_name AS department FROM departments;', function (err, results) {
+        if(err) {
+            console.error(err);
+        } else {
+            for (let i = 0; i < results.length; i++) {
+                const departmentName = results[i].id + ' ' + results[i].department;
+                departmentList.push(departmentName);
+            }
+        }
+    });
+    return departmentList;
+};
 
 // initial command line query
 // view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
@@ -30,25 +47,6 @@ const firstQueryQuestions = [
             'Update an employee role',
             'Quit'
         ]
-    }
-]
-
-const addRoleQuestions = [
-    {
-        name: 'name',
-        type: 'input',
-        message: "What is the role's name?"
-    },
-    {
-        name: 'salary',
-        type: 'number',
-        message: "What is the role's salary?"
-    },
-    {
-        name: 'department',
-        type: 'list',
-        message: "What is the role's department?",
-        choices: ['Default'] // TODO get current departments and add these to the choices
     }
 ]
 
@@ -91,7 +89,7 @@ const startQuestions = function() {
         switch (data.option) {
             case 'View all departments':
                 // log all departments
-                db.query('SELECT departments.id, departments.department_name AS Department FROM departments;', function (err, results) {
+                db.query('SELECT departments.id, departments.department_name AS Department FROM departments ORDER BY departments.id;', function (err, results) {
                     if(err) {
                         console.error(err);
                     } else {
@@ -103,7 +101,7 @@ const startQuestions = function() {
                 break;
             case 'View all roles':
                 // log all roles
-                db.query('SELECT roles.id, roles.title, roles.salary, departments.department_name AS Department FROM roles JOIN departments ON departments.id = roles.department_id;', function (err, results) {
+                db.query('SELECT roles.id, roles.title, roles.salary, departments.department_name AS Department FROM roles JOIN departments ON departments.id = roles.department_id ORDER BY roles.id;', function (err, results) {
                     if(err) {
                         console.error(err);
                     } else {
@@ -146,6 +144,36 @@ const startQuestions = function() {
                 break;
             case 'Add a role':
                 // TODO prompt user for a role
+                inquirer.prompt([
+                    {
+                        name: 'name',
+                        type: 'input',
+                        message: "What is the role's name?"
+                    },
+                    {
+                        name: 'salary',
+                        type: 'number',
+                        message: "What is the role's salary?"
+                    },
+                    {
+                        name: 'department',
+                        type: 'list',
+                        message: "What is the role's department?",
+                        choices: getDepartments() // TODO get current departments and add these to the choices
+                    }
+                ]).then(data => {
+                    // Add user's response as a role in the database
+                    const departmentID = data.department.split(' ')[0];
+                    db.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?);', [data.name, data.salary, departmentID], function (err, result) {
+                        if(err) {
+                            console.error(err);
+                        } else {
+                            console.log('');
+                            console.log(`Created ${data.name} role`);
+                            startQuestions();
+                        }
+                    });
+                }).catch(err => console.error(err))
                 // TODO prevent adding roles unless at least one department exists
                 break;
             case 'Add an employee':
