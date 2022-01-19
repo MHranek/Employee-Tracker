@@ -33,14 +33,6 @@ const firstQueryQuestions = [
     }
 ]
 
-const addDepartmentsQuestions = [
-    {
-        name: 'name',
-        type: 'input',
-        message: "What is department's name?"
-    }
-]
-
 const addRoleQuestions = [
     {
         name: 'name',
@@ -134,16 +126,23 @@ const startQuestions = function() {
                 });
                 break;
             case 'Add a department':
-                // TODO prompt user for a department name
-                db.query('SELECT * FROM employees', function (err, results) {
-                    if(err) {
-                        console.error(err);
-                    } else {
-                        console.log('');
-                        console.table(results);
-                        startQuestions();
-                    }
-                });
+                // prompt user for a department name
+                inquirer.prompt([{
+                    name: 'name',
+                    type: 'input',
+                    message: "What is department's name?"
+                }]).then(data => {
+                    // Add user's response as a department in the database
+                    db.query('INSERT INTO departments (department_name) VALUES (?);', [data.name], function (err, result) {
+                        if(err) {
+                            console.error(err);
+                        } else {
+                            console.log('');
+                            console.log(`Created ${data.name} department`);
+                            startQuestions();
+                        }
+                    });
+                }).catch(err => console.error(err))
                 break;
             case 'Add a role':
                 // TODO prompt user for a role
