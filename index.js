@@ -2,6 +2,17 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
 
+// Mysql connection
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: 'root',
+        password: 'B00tc@mp',
+        database: 'employees_db'
+    },
+    console.log('Employee Manager')
+);
+
 // initial command line query
 // view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
 const firstQueryQuestions = [
@@ -16,7 +27,8 @@ const firstQueryQuestions = [
             'Add a department',
             'Add a role',
             'Add an employee',
-            'Update an employee role'
+            'Update an employee role',
+            'Quit'
         ]
     }
 ]
@@ -81,12 +93,17 @@ const updateEmployeeQuestions = [
     }
 ]
 
-const start = function() {
+const startQuestions = function() {
     inquirer.prompt(firstQueryQuestions).then(data => {
         // Depending on user's choice either return corresponding data or prompt corresponding questions
         switch (data.option) {
             case 'View all departments':
-                // TODO log all departments
+                // log all departments
+                db.query('SELECT * FROM departments', function (err, results) {
+                    console.log('');
+                    console.table(results);
+                    startQuestions();
+                });
                 break;
             case 'View all roles':
                 // TODO log all roles
@@ -109,9 +126,10 @@ const start = function() {
                 // TODO prompt user for an employee to update their role
                 break;
             default:
+                process.exit();
                 break;
         }
     }).catch(err => console.error(err))
 }
 
-start();
+startQuestions();
