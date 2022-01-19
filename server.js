@@ -1,7 +1,5 @@
 // Requires
 const express = require('express');
-const mysql = require('mysql2');
-const index = require('./index');
 
 // server setup
 const PORT = process.env.PORT || 3001;
@@ -11,7 +9,7 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// mysql database connection
+// Database connection
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -21,6 +19,12 @@ const db = mysql.createConnection(
     },
     console.log('Connected to the employees_db database')
 );
+
+// TODO database queries
+
+app.use((req, res) => {
+    res.status(404).end();
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
