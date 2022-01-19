@@ -99,30 +99,51 @@ const startQuestions = function() {
         switch (data.option) {
             case 'View all departments':
                 // log all departments
-                db.query('SELECT * FROM departments', function (err, results) {
-                    console.log('');
-                    console.table(results);
-                    startQuestions();
+                db.query('SELECT departments.id, departments.department_name AS Department FROM departments;', function (err, results) {
+                    if(err) {
+                        console.error(err);
+                    } else {
+                        console.log('');
+                        console.table(results);
+                        startQuestions();
+                    }
                 });
                 break;
             case 'View all roles':
                 // log all roles
-                db.query('SELECT * FROM roles', function (err, results) {
-                    console.log('');
-                    console.table(results);
-                    startQuestions();
+                db.query('SELECT roles.id, roles.title, roles.salary, departments.department_name AS Department FROM roles JOIN departments ON departments.id = roles.department_id;', function (err, results) {
+                    if(err) {
+                        console.error(err);
+                    } else {
+                        console.log('');
+                        console.table(results);
+                        startQuestions();
+                    }
                 });
                 break;
             case 'View all employees':
                 // log all employees
-                db.query('SELECT * FROM employees', function (err, results) {
-                    console.log('');
-                    console.table(results);
-                    startQuestions();
+                db.query('SELECT employees.first_name, employees.last_name, roles.title AS Role, roles.salary, departments.department_name AS Department FROM employees INNER JOIN roles ON roles.id = employees.role_id INNER JOIN departments ON departments.id = roles.department_id;', function (err, results) {
+                    if(err) {
+                        console.error(err);
+                    } else {
+                        console.log('');
+                        console.table(results);
+                        startQuestions();
+                    }
                 });
                 break;
             case 'Add a department':
                 // TODO prompt user for a department name
+                db.query('SELECT * FROM employees', function (err, results) {
+                    if(err) {
+                        console.error(err);
+                    } else {
+                        console.log('');
+                        console.table(results);
+                        startQuestions();
+                    }
+                });
                 break;
             case 'Add a role':
                 // TODO prompt user for a role
