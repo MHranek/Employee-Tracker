@@ -30,6 +30,22 @@ const getDepartments = function () {
     return departmentList;
 };
 
+// Get current roles, returns array of strings
+const getRoles = function () {
+    const rolesList = [];
+    db.query('SELECT roles.id, roles.title, roles.salary, departments.department_name AS department FROM roles JOIN departments ON departments.id = roles.department_id ORDER BY roles.id;', function (err, results) {
+        if(err) {
+            console.error(err);
+        } else {
+            for (let i = 0; i < results.length; i++) {
+                const roleName = results[i].id + ' ' + results[i].title;
+                rolesList.push(roleName);
+            }
+        }
+    });
+    return rolesList;
+}
+
 // initial command line query
 // view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
 const firstQueryQuestions = [
@@ -65,7 +81,7 @@ const addEmployeeQuestions = [
         name: 'role',
         type: 'list',
         message: "What is the employee's role?",
-        choices: ['Default'] // TODO get current roles and add these to the choices
+        choices: getRoles() // get current roles and add these to the choices
     },
     {
         name: 'manager',
@@ -113,7 +129,7 @@ const startQuestions = function() {
                 break;
             case 'View all employees':
                 // log all employees
-                db.query('SELECT employees.first_name, employees.last_name, roles.title AS Role, roles.salary, departments.department_name AS Department FROM employees INNER JOIN roles ON roles.id = employees.role_id INNER JOIN departments ON departments.id = roles.department_id;', function (err, results) {
+                db.query('SELECT employee.first_name, employee.last_name, roles.title AS role, roles.salary, departments.department_name AS department, manager.first_name AS manager, manager.last_name AS name FROM employees employee INNER JOIN roles ON roles.id = employee.role_id INNER JOIN departments ON departments.id = roles.department_id LEFT OUTER JOIN employees manager ON employee.manager_id =manager.id;', function (err, results) {
                     if(err) {
                         console.error(err);
                     } else {
@@ -143,7 +159,7 @@ const startQuestions = function() {
                 }).catch(err => console.error(err))
                 break;
             case 'Add a role':
-                // TODO prompt user for a role
+                // prompt user for a role
                 inquirer.prompt([
                     {
                         name: 'name',
@@ -159,7 +175,7 @@ const startQuestions = function() {
                         name: 'department',
                         type: 'list',
                         message: "What is the role's department?",
-                        choices: getDepartments() // TODO get current departments and add these to the choices
+                        choices: getDepartments() // get current departments and add these to the choices
                     }
                 ]).then(data => {
                     // Add user's response as a role in the database
@@ -174,11 +190,28 @@ const startQuestions = function() {
                         }
                     });
                 }).catch(err => console.error(err))
-                // TODO prevent adding roles unless at least one department exists
                 break;
             case 'Add an employee':
-                // TODO prompt user for an employee
-                // TODO prevent adding employees unless at least one role exists
+                // prompt user for an employee
+                inquirer.prompt(addEmployeeQuestions).then(data => {
+                    // Add user's response as an employee in the database
+                    const roleID = data.role.split(' ')[0];
+                    let managerID;
+                    if (data.manager) {
+                        managerID = 1;
+                    } else {
+                        managerID = null;
+                    }
+                    db.query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?);', [data.firstName, data.lastName, roleID, managerID], function (err, result) {
+                        if(err) {
+                            console.error(err);
+                        } else {
+                            console.log('');
+                            console.log(`Created ${data.firstName, data.lastName} employee`);
+                            startQuestions();
+                        }
+                    });
+                }).catch(err => console.error(err))
                 break;
             case 'Update an employee role':
                 // TODO prompt user for an employee to update their role
