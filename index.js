@@ -85,7 +85,7 @@ const addEmployeeQuestions = [
     {
         name: 'manager',
         type: 'input',
-        message: "Who is the employee's manager?"
+        message: "What is their manager's ID?"
     }
 ]
 
@@ -128,10 +128,11 @@ const startQuestions = function() {
                 break;
             case 'View all employees':
                 // log all employees
-                db.query('SELECT employee.first_name, employee.last_name, roles.title AS role, roles.salary, departments.department_name AS department, manager.first_name AS manager, manager.last_name AS name FROM employees employee INNER JOIN roles ON roles.id = employee.role_id INNER JOIN departments ON departments.id = roles.department_id LEFT OUTER JOIN employees manager ON employee.manager_id =manager.id;', function (err, results) {
+                db.query('SELECT employee.id, employee.first_name, employee.last_name, roles.title AS Role, roles.salary, departments.department_name AS department, manager.first_name AS Manager, manager.last_name AS Name FROM employees employee INNER JOIN roles ON roles.id = employee.role_id INNER JOIN departments ON departments.id = roles.department_id LEFT OUTER JOIN employees manager ON employee.manager_id = manager.id ORDER BY id;', function (err, results) {
                     if(err) {
                         console.error(err);
                     } else {
+                        // combign manager's first and last name and delete the last name column
                         for (let i = 0; i < results.length; i++) {
                             if (results[i].manager != null) {
                                 results[i].manager = results[i].manager + ' ' + results[i].name;
@@ -203,7 +204,7 @@ const startQuestions = function() {
                     const roleID = data.role.split(' ')[0];
                     let managerID;
                     if (data.manager) {
-                        managerID = 1;
+                        managerID = data.manager;
                     } else {
                         managerID = null;
                     }
