@@ -16,6 +16,7 @@ Clone from the [github repository](https://github.com/MHranek/Employee-Tracker),
 
 ## Usage
 Follow the prompts given to build departments, then roles, then employees
+[Walkthrough](https://watch.screencastify.com/v/mInUd0FhoKErdO11jnvl)
 
 ## Contributing
 Github
