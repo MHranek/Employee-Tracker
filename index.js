@@ -1,7 +1,6 @@
 // Requires
 const mysql = require('mysql2');
 const inquirer = require('inquirer');
-const res = require('express/lib/response');
 
 // Mysql connection
 const db = mysql.createConnection(
@@ -133,6 +132,12 @@ const startQuestions = function() {
                     if(err) {
                         console.error(err);
                     } else {
+                        for (let i = 0; i < results.length; i++) {
+                            if (results[i].manager != null) {
+                                results[i].manager = results[i].manager + ' ' + results[i].name;
+                            }
+                            delete results[i].name;
+                        }
                         console.log('');
                         console.table(results);
                         startQuestions();
