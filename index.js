@@ -84,46 +84,6 @@ const firstQueryQuestions = [
     }
 ]
 
-const addEmployeeQuestions = [
-    {
-        name: 'firstName',
-        type: 'input',
-        message: "What is the employee's first name?"
-    },
-    {
-        name: 'lastName',
-        type: 'input',
-        message: "What is the employee's last name?"
-    },
-    {
-        name: 'role',
-        type: 'list',
-        message: "What is the employee's role?",
-        choices: getRoles() // get current roles and add these to the choices
-    },
-    {
-        name: 'manager',
-        type: 'list',
-        message: "Who is the employee's manager?",
-        choices: getEmployees('N/A')
-    }
-]
-
-const updateEmployeeQuestions = [
-    {
-        name: 'employee',
-        type: 'list',
-        message: "Which employee do you want to update?",
-        choices: getEmployees() // get current employees and add these to the choices
-    },
-    {
-        name: 'newRole',
-        type: 'list',
-        message: "What role should this employee now have?",
-        choices: getRoles()
-    }
-]
-
 const startQuestions = function() {
     inquirer.prompt(firstQueryQuestions).then(data => {
         // Depending on user's choice either return corresponding data or prompt corresponding questions
@@ -225,7 +185,30 @@ const startQuestions = function() {
                 break;
             case 'Add an employee':
                 // prompt user for an employee
-                inquirer.prompt(addEmployeeQuestions).then(data => {
+                inquirer.prompt([
+                    {
+                        name: 'firstName',
+                        type: 'input',
+                        message: "What is the employee's first name?"
+                    },
+                    {
+                        name: 'lastName',
+                        type: 'input',
+                        message: "What is the employee's last name?"
+                    },
+                    {
+                        name: 'role',
+                        type: 'list',
+                        message: "What is the employee's role?",
+                        choices: getRoles() // get current roles and add these to the choices
+                    },
+                    {
+                        name: 'manager',
+                        type: 'list',
+                        message: "Who is the employee's manager?",
+                        choices: getEmployees('N/A')
+                    }
+                ]).then(data => {
                     // Add user's response as an employee in the database
                     const roleID = data.role.split(' ')[0];
                     let managerID = data.manager.split(' ')[0];
@@ -245,7 +228,20 @@ const startQuestions = function() {
                 break;
             case 'Update an employee role':
                 // prompt user for an employee to update their role
-                inquirer.prompt(updateEmployeeQuestions).then(data => {
+                inquirer.prompt([
+                    {
+                        name: 'employee',
+                        type: 'list',
+                        message: "Which employee do you want to update?",
+                        choices: getEmployees() // get current employees and add these to the choices
+                    },
+                    {
+                        name: 'newRole',
+                        type: 'list',
+                        message: "What role should this employee now have?",
+                        choices: getRoles()
+                    }
+                ]).then(data => {
                     const employeeID = data.employee.split(' ');
                     const role = data.newRole.split(' ')[0];
                     db.query('UPDATE employees SET employees.role_id = ? WHERE id = ?', [role, employeeID[0]], function (err, result) {
